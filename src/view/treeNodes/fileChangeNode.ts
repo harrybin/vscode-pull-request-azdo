@@ -175,7 +175,7 @@ export class FileChangeNode extends TreeNode implements vscode.TreeItem {
 			reviewThreadsForNode.length > 0,
 		);
 		/* Some comments are attached to the file and have not reference/selection in the content. Need to be removed here. */
-		reviewThreadsForNode = reviewThreadsForNode.filter((thread) => thread.line !== undefined);
+		reviewThreadsForNode = reviewThreadsForNode.filter(thread => thread.line !== undefined);
 
 		if (reviewThreadsForNode.length) {
 			reviewThreadsForNode.sort((a, b) => a.line - b.line);

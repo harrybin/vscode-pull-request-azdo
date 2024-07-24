@@ -108,7 +108,7 @@ async function getWebviewConfig(mode, env, entry) {
 									target: 'es2019',
 									tsconfigRaw: await resolveTSConfig(path.join(__dirname, 'tsconfig.webviews.json')),
 								},
-						  }
+							}
 						: {
 								loader: 'ts-loader',
 								options: {
@@ -116,7 +116,7 @@ async function getWebviewConfig(mode, env, entry) {
 									experimentalWatchApi: true,
 									transpileOnly: true,
 								},
-						  },
+							},
 				},
 				{
 					test: /\.css/,
@@ -232,7 +232,7 @@ async function getExtensionConfig(target, mode, env) {
 										),
 									),
 								},
-						  }
+							}
 						: {
 								loader: 'ts-loader',
 								options: {
@@ -243,7 +243,7 @@ async function getExtensionConfig(target, mode, env) {
 									experimentalWatchApi: true,
 									transpileOnly: true,
 								},
-						  },
+							},
 				},
 				// // FIXME: apollo-client uses .mjs, which imposes hard restrictions
 				// // on imports available from other callers. They probably didn't know
@@ -298,7 +298,7 @@ async function getExtensionConfig(target, mode, env) {
 								'gitProviders',
 								'api',
 							),
-					  }
+						}
 					: undefined,
 			// : {
 			// 	'universal-user-agent': path.join(__dirname, 'node_modules', 'universal-user-agent', 'dist-node', 'index.js'),
@@ -330,7 +330,7 @@ async function getExtensionConfig(target, mode, env) {
 							fs: path.resolve(__dirname, 'src', 'env', 'browser', 'fs'),
 							net: false,
 							tls: false,
-					  }
+						}
 					: undefined,
 			extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
 			symlinks: false,

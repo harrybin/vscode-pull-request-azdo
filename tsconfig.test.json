@@ -8,7 +8,7 @@
 		"noEmit": false,
 		"plugins": [
 			{
-				"transform": "ts-auto-mock/transformer",
+				"transform": "ts-auto-mock/transformer"
 			}
 		]
 	}

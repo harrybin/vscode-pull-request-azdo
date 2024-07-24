@@ -5,17 +5,17 @@
 	"icon": "resources/icons/azdo_logo.png",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ankitbko/vscode-pull-request-azdo"
+		"url": "https://github.com/harrybin/vscode-pull-request-azdo"
 	},
 	"bugs": {
-		"url": "https://github.com/ankitbko/vscode-pull-request-azdo/issues"
+		"url": "https://github.com/harrybin/vscode-pull-request-azdo/issues"
 	},
 	"enabledApiProposals": [],
 	"preview": true,
-	"version": "0.2.2",
-	"publisher": "ankitbko",
+	"version": "0.2.3",
+	"publisher": "harrybin (forked from ankitbko)",
 	"engines": {
-		"vscode": "^1.79.0"
+		"vscode": "^1.91.1"
 	},
 	"categories": [
 		"Other"

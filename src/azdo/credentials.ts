@@ -18,7 +18,12 @@ export class Azdo {
 	public connection: azdev.WebApi;
 	public authenticatedUser: Identity | undefined;
 
-	constructor(public orgUrl: string, public projectName: string, token: string, isPatTokenAuth: boolean = false) {
+	constructor(
+		public orgUrl: string,
+		public projectName: string,
+		token: string,
+		isPatTokenAuth: boolean = false,
+	) {
 		if (isPatTokenAuth) {
 			this._authHandler = azdev.getPersonalAccessTokenHandler(token, true);
 		} else {
@@ -42,7 +47,10 @@ export class CredentialStore implements vscode.Disposable {
 	private _sessionId: string | undefined;
 	private _sessionOptions: vscode.AuthenticationGetSessionOptions = { createIfNone: true };
 
-	constructor(private readonly _telemetry: ITelemetry, private readonly _secretStore: vscode.SecretStorage) {
+	constructor(
+		private readonly _telemetry: ITelemetry,
+		private readonly _secretStore: vscode.SecretStorage,
+	) {
 		this._disposables = [];
 		this._disposables.push(
 			vscode.authentication.onDidChangeSessions(async () => {
@@ -108,12 +116,11 @@ export class CredentialStore implements vscode.Disposable {
 		let retry: boolean = true;
 
 		while (retry) {
-			try
-			{
+			try {
 				let isPatTokenAuth = true;
 				let token = vscode.workspace.getConfiguration(SETTINGS_NAMESPACE).get<string | undefined>(PATTOKEN_SETTINGS);
 
-				if(token === undefined || token === null || token === '') {
+				if (token === undefined || token === null || token === '') {
 					const session = await this.getSession(this._sessionOptions);
 					if (!session) {
 						Logger.appendLine('Auth> Unable to get session', CredentialStore.ID);
@@ -169,7 +176,7 @@ export class CredentialStore implements vscode.Disposable {
 			'microsoft',
 			// This GUID is the Azure DevOps GUID and you basically ask for a token that can be used to interact with AzDO. This is publicly documented all over
 			['499b84ac-1321-427f-aa17-267ca6975798/.default', 'offline_access'],
-			sessionOptions
+			sessionOptions,
 		);
 	}
 

@@ -49,7 +49,7 @@ export function CommentView(comment: Props) {
 		return React.cloneElement(comment.headerInEditMode ? <CommentBox for={comment} /> : <></>, {}, [
 			<EditComment
 				id={id}
-				body={currentDraft || bodyMd || ""}
+				body={currentDraft || bodyMd || ''}
 				onCancel={() => {
 					if (pr.pendingCommentDrafts) {
 						delete pr.pendingCommentDrafts[id];
@@ -93,7 +93,7 @@ export function CommentView(comment: Props) {
 				</div>
 			) : null}
 			<CommentBody
-				commentContent={comment.content ?? ""}
+				commentContent={comment.content ?? ''}
 				commentId={comment.id ?? 0}
 				threadId={comment.threadId}
 				bodyHTML={bodyHTMLState}
@@ -133,8 +133,11 @@ function CommentBox({ for: comment, onMouseEnter, onMouseLeave, children, thread
 			<div className="review-comment-container">
 				<div className="review-comment-header">
 					<Spaced>
-						<Avatar url={author?.profileUrl ?? ""} avatarUrl={author ? author['_links']?.['avatar']?.['href'] : ""} />
-						<AuthorLink url={author?.profileUrl ?? ""} text={author?.displayName ?? ""} />
+						<Avatar
+							url={author?.profileUrl ?? ''}
+							avatarUrl={author ? author['_links']?.['avatar']?.['href'] : ''}
+						/>
+						<AuthorLink url={author?.profileUrl ?? ''} text={author?.displayName ?? ''} />
 						{publishedDate ? (
 							<>
 								commented{nbsp}
@@ -151,7 +154,10 @@ function CommentBox({ for: comment, onMouseEnter, onMouseLeave, children, thread
 							: null
 					} */}
 						{!!threadStatus ? (
-							<select onChange={e => changeThreadStatus && changeThreadStatus(e.target.value)} defaultValue={threadStatus.toString()}>
+							<select
+								onChange={e => changeThreadStatus && changeThreadStatus(e.target.value)}
+								defaultValue={threadStatus.toString()}
+							>
 								{ThreadStatusOrder.map(status => (
 									<option key={status} value={status}>
 										{ThreadStatus[status]}
@@ -253,17 +259,17 @@ export interface Embodied {
 import { ReactElement } from 'react';
 
 const renderers: Partial<Components> = {
-  code: ({ language, value }: { language: any; value: any }): ReactElement => {
-	return (
-	  <SyntaxHighlighter
-		style={dracula}
-		language={language}
-		showLineNumbers={true}
-		wrapLongLines={true}
-		children={value}
-	  />
-	);
-  },
+	code: ({ language, value }: { language: any; value: any }): ReactElement => {
+		return (
+			<SyntaxHighlighter
+				style={dracula}
+				language={language}
+				showLineNumbers={true}
+				wrapLongLines={true}
+				children={value}
+			/>
+		);
+	},
 } as Partial<Components>;
 
 export const CommentBody = ({ commentContent, commentId, threadId, bodyHTML, body }: Embodied) => {
@@ -278,7 +284,7 @@ export const CommentBody = ({ commentContent, commentId, threadId, bodyHTML, bod
 	const { applyPatch } = useContext(PullRequestContext);
 	// const renderedBody = <div dangerouslySetInnerHTML={{ __html: bodyHTML }} />;
 	const renderedBody = <ReactMarkdown components={renderers} children={body} />;
-	const containsSuggestion = (body || bodyHTML || "").indexOf('```diff') > -1;
+	const containsSuggestion = (body || bodyHTML || '').indexOf('```diff') > -1;
 	const applyPatchButton = containsSuggestion ? (
 		<button onClick={() => applyPatch(commentContent, commentId, threadId)}>Apply Patch</button>
 	) : (

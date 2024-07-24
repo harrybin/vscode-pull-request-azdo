@@ -21,7 +21,10 @@ import Logger from './logger';
 import { fromPRUri, fromReviewUri } from './uri';
 
 export class CommonCommentHandler {
-	constructor(public pullRequestModel: PullRequestModel, private _folderReposManager: FolderRepositoryManager) {}
+	constructor(
+		public pullRequestModel: PullRequestModel,
+		private _folderReposManager: FolderRepositoryManager,
+	) {}
 
 	public async createOrReplyComment(
 		thread: GHPRCommentThread,
@@ -211,9 +214,8 @@ export class CommonCommentHandler {
 
 		const fileChangesToSearch = await getFileChanges(isOutdated);
 
-		const matchedFile = (uri.scheme === URI_SCHEME_REVIEW
-			? gitFileChangeNodeFilter(fileChangesToSearch)
-			: fileChangesToSearch
+		const matchedFile = (
+			uri.scheme === URI_SCHEME_REVIEW ? gitFileChangeNodeFilter(fileChangesToSearch) : fileChangesToSearch
 		).find(fileChange => {
 			if (uri.scheme === URI_SCHEME_REVIEW || uri.scheme === URI_SCHEME_PR) {
 				return fileChange.fileName === fileName;

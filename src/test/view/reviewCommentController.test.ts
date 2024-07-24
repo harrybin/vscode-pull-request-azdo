@@ -89,7 +89,13 @@ describe('ReviewCommentController', function () {
 
 		provider = new PullRequestsTreeDataProvider(telemetry);
 		fileReviewedStatusService = sinon.createStubInstance(FileReviewedStatusService);
-		manager = new FolderRepositoryManager(repository, telemetry, new GitApiImpl(), credentialStore, fileReviewedStatusService);
+		manager = new FolderRepositoryManager(
+			repository,
+			telemetry,
+			new GitApiImpl(),
+			credentialStore,
+			fileReviewedStatusService,
+		);
 		sinon.stub(credentialStore, 'isAuthenticated').returns(false);
 		await manager.updateRepositories();
 
@@ -172,10 +178,12 @@ describe('ReviewCommentController', function () {
 				localFileChanges,
 				[],
 				[],
-				c => { return {
-					canDelete: false,
-					canEdit: false,
-				}},
+				c => {
+					return {
+						canDelete: false,
+						canEdit: false,
+					};
+				},
 				commonCommentHandler,
 			);
 			const thread = createGHPRCommentThread('review-1.1', uri);
@@ -197,19 +205,26 @@ describe('ReviewCommentController', function () {
 			// });
 
 			sinon.stub(activePullRequest.azdoRepository.azdo.connection, 'getGitApi').resolves({
-				createThread: async (c,r,n,p) => {
+				createThread: async (c, r, n, p) => {
 					return {
 						id: 1,
-						comments: [{ id: 1, commentType: CommentType.Text, content: 'text', author: {
-							displayName: 'Ankit'
-						} }],
-						threadContext: {rightFileStart: 10, filePath: fileName},
+						comments: [
+							{
+								id: 1,
+								commentType: CommentType.Text,
+								content: 'text',
+								author: {
+									displayName: 'Ankit',
+								},
+							},
+						],
+						threadContext: { rightFileStart: 10, filePath: fileName },
 						status: CommentThreadStatus.Active,
 					};
 				},
 				getPullRequestIterations: (r, n, p, i) => {
-					return []
-				}
+					return [];
+				},
 			} as any);
 
 			sinon.stub(activePullRequest.azdoRepository, 'ensure').resolves(activePullRequest.azdoRepository);

@@ -495,14 +495,14 @@ export function registerCommands(
 							emptyFileUri,
 							`${fileChange.fileName}`,
 							{ preserveFocus: true },
-					  )
+						)
 					: vscode.commands.executeCommand(
 							'vscode.diff',
 							emptyFileUri,
 							fileChange.parentFilePath,
 							`${fileChange.fileName}`,
 							{ preserveFocus: true },
-					  );
+						);
 			}
 
 			// Show the file change in a diff view.

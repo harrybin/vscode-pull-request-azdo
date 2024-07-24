@@ -42,9 +42,15 @@ describe('PullRequestOverview', function () {
 
 		const repository = new MockRepository();
 		telemetry = new MockTelemetry();
-		const credentialStore = new CredentialStore(telemetry, createFakeSecretStorage())
+		const credentialStore = new CredentialStore(telemetry, createFakeSecretStorage());
 		fileReviewedStatusService = sinon.createStubInstance(FileReviewedStatusService);
-		pullRequestManager = new FolderRepositoryManager(repository, telemetry, new GitApiImpl(), credentialStore, fileReviewedStatusService);
+		pullRequestManager = new FolderRepositoryManager(
+			repository,
+			telemetry,
+			new GitApiImpl(),
+			credentialStore,
+			fileReviewedStatusService,
+		);
 		workItem = new AzdoWorkItem(credentialStore, telemetry);
 		userManager = new AzdoUserManager(credentialStore, telemetry);
 
