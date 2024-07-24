@@ -19,16 +19,7 @@ if (!tty.getWindowSize) {
 
 function addTests(mocha: Mocha, root: string): Promise<void> {
 	return new Promise((resolve, reject) => {
-		glob('**/**.test.js', { cwd: root }, (error, files) => {
-			if (error) {
-				return reject(error);
-			}
-
-			for (const testFile of files) {
-				mocha.addFile(path.join(root, testFile));
-			}
-			resolve();
-		});
+		glob('**/**.test.js', { cwd: root });
 	});
 }
 
@@ -43,7 +34,6 @@ async function runAllExtensionTests(testsRoot: string): Promise<number> {
 
 	const mocha = new Mocha({
 		ui: 'bdd',
-		useColors: true,
 		timeout: 600000,
 	});
 	mocha.addFile(path.resolve(testsRoot, 'globalHooks.js'));

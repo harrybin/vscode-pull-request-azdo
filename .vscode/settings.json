@@ -1,4 +1,5 @@
 {
+	"npm.packageManager": "yarn",
 	"files.trimTrailingWhitespace": true,
 	"editor.insertSpaces": false,
 	"files.watcherExclude": {
@@ -12,5 +13,8 @@
 		".eslintrc.json": "jsonc",
 		".eslintrc.*.json": "jsonc"
 	},
-	"gitlens.advanced.blame.customArguments": ["--ignore-revs-file", ".gitignore-revs"]
+	"gitlens.advanced.blame.customArguments": [
+		"--ignore-revs-file",
+		".gitignore-revs"
+	]
 }

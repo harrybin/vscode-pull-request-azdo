@@ -3,14 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as OctokitTypes from '@octokit/types';
 import { IdentityRefWithVote } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import * as vscode from 'vscode';
 import { formatError } from '../common/utils';
 import { getNonce, IRequestMessage, WebviewBase } from '../common/webview';
 import { SETTINGS_NAMESPACE } from '../constants';
 import { FolderRepositoryManager } from './folderRepositoryManager';
-import { GithubItemStateEnum, MergeMethod, PullRequestVote } from './interface';
+import { GithubItemStateEnum, MergeMethod, PullRequestVote, PullRequest } from './interface';
 import { PullRequestModel } from './pullRequestModel';
 import { getDefaultMergeMethod } from './pullRequestOverview';
 
@@ -154,7 +153,7 @@ export class PullRequestViewProvider extends WebviewBase implements vscode.Webvi
 
 	private close(message: IRequestMessage<string>): void {
 		vscode.commands
-			.executeCommand<OctokitTypes.PullsGetResponseData>('azdopr.close', this._item, message.args)
+			.executeCommand('azdopr.close', this._item, message.args)
 			.then(comment => {
 				if (comment) {
 					this._replyMessage(message, {

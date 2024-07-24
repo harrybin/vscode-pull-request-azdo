@@ -12,7 +12,7 @@
 
 const execFile = require('child_process').execFile;
 const path = require('path');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
+//const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const JSON5 = require('json5');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -54,11 +54,6 @@ async function getWebviewConfig(mode, env, entry) {
 	const plugins = [
 		new ForkTsCheckerPlugin({
 			async: false,
-			eslint: {
-				enabled: true,
-				files: path.join(basePath, '**', '*.ts'),
-				options: { cache: true, configFile: path.join(__dirname, '.eslintrc.webviews.json') },
-			},
 			formatter: 'basic',
 			typescript: {
 				configFile: path.join(__dirname, 'tsconfig.webviews.json'),
@@ -78,25 +73,25 @@ async function getWebviewConfig(mode, env, entry) {
 		},
 		optimization: {
 			minimizer: [
-				// @ts-ignore
-				env.esbuild
-					? new ESBuildMinifyPlugin({
-							format: 'cjs',
-							minify: true,
-							treeShaking: true,
-							// Keep the class names
-							keepNames: true,
-							target: 'es2019',
-					  })
-					: new TerserPlugin({
-							extractComments: false,
-							parallel: true,
-							terserOptions: {
-								ecma: 2019,
-								keep_classnames: /^AbortSignal$/,
-								module: true,
-							},
-					  }),
+				// // @ts-ignore
+				// env.esbuild
+				// 	? new ESBuildMinifyPlugin({
+				// 			format: 'cjs',
+				// 			minify: true,
+				// 			treeShaking: true,
+				// 			// Keep the class names
+				// 			keepNames: true,
+				// 			target: 'es2019',
+				// 	  })
+				// 	: new TerserPlugin({
+				// 			extractComments: false,
+				// 			parallel: true,
+				// 			terserOptions: {
+				// 				ecma: 2019,
+				// 				keep_classnames: /^AbortSignal$/,
+				// 				module: true,
+				// 			},
+				// 	  }),
 			],
 		},
 		module: {
@@ -136,6 +131,7 @@ async function getWebviewConfig(mode, env, entry) {
 		resolve: {
 			extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.svg'],
 			fallback: {
+				child_process: false,
 				path: require.resolve('path-browserify'),
 			},
 		},
@@ -158,14 +154,6 @@ async function getExtensionConfig(target, mode, env) {
 	const plugins = [
 		new ForkTsCheckerPlugin({
 			async: false,
-			eslint: {
-				enabled: true,
-				files: path.join(basePath, '**', '*.ts'),
-				options: {
-					cache: true,
-					configFile: path.join(__dirname, target === 'webworker' ? '.eslintrc.browser.json' : '.eslintrc.node.json'),
-				},
-			},
 			formatter: 'basic',
 			typescript: {
 				configFile: path.join(__dirname, target === 'webworker' ? 'tsconfig.browser.json' : 'tsconfig.json'),
@@ -174,14 +162,12 @@ async function getExtensionConfig(target, mode, env) {
 	];
 
 	if (target === 'webworker') {
-		plugins.push(new webpack.ProvidePlugin({
-			process: path.join(
-				__dirname,
-				'node_modules',
-				'process',
-				'browser.js'),
-			Buffer: ['buffer', 'Buffer'],
-		}));
+		plugins.push(
+			new webpack.ProvidePlugin({
+				process: path.join(__dirname, 'node_modules', 'process', 'browser.js'),
+				Buffer: ['buffer', 'Buffer'],
+			}),
+		);
 	}
 
 	const entry = {
@@ -205,26 +191,26 @@ async function getExtensionConfig(target, mode, env) {
 		},
 		optimization: {
 			minimizer: [
-				// @ts-ignore
-				env.esbuild
-					? new ESBuildMinifyPlugin({
-							format: 'cjs',
-							minify: true,
-							treeShaking: true,
-							// // Keep the class names
-							// keepNames: true,
-							target: 'es2019',
-					  })
-					: new TerserPlugin({
-							extractComments: false,
-							parallel: true,
-							terserOptions: {
-								ecma: 2019,
-								// // Keep the class names
-								// keep_classnames: true,
-								module: true,
-							},
-					  }),
+				// // @ts-ignore
+				// env.esbuild
+				// 	? new ESBuildMinifyPlugin({
+				// 			format: 'cjs',
+				// 			minify: true,
+				// 			treeShaking: true,
+				// 			// // Keep the class names
+				// 			// keepNames: true,
+				// 			target: 'es2019',
+				// 	  })
+				// 	: new TerserPlugin({
+				// 			extractComments: false,
+				// 			parallel: true,
+				// 			terserOptions: {
+				// 				ecma: 2019,
+				// 				// // Keep the class names
+				// 				// keep_classnames: true,
+				// 				module: true,
+				// 			},
+				// 	  }),
 			],
 		},
 		module: {
@@ -320,36 +306,30 @@ async function getExtensionConfig(target, mode, env) {
 			fallback:
 				target === 'webworker'
 					? {
+							child_process: false,
 							path: require.resolve('path-browserify'),
 							url: require.resolve('url'),
-							stream: require.resolve("stream-browserify"),
+							stream: require.resolve('stream-browserify'),
 							// zlib: require.resolve("browserify-zlib"),
 							// crypto: require.resolve("crypto-browserify"),
-							http: require.resolve("stream-http"),
-							https: require.resolve("https-browserify"),
+							http: require.resolve('stream-http'),
+							https: require.resolve('https-browserify'),
 							// util: require.resolve("util/"),
-							buffer: require.resolve("buffer/"),
+							buffer: require.resolve('buffer/'),
 							// assert: require.resolve("assert/"),
 							// stream:false,
 							zlib: false,
-							crypto:false,
+							crypto: false,
 							// http: false,
 							//https:false,
 							util: false,
 							// buffer:false,
-							'assert': require.resolve('assert'),
-							'os': require.resolve('os-browserify/browser'),
-							"constants": require.resolve("constants-browserify"),
-							fs: path.resolve(
-								__dirname,
-								'src',
-								'env',
-								'browser',
-								'fs',
-							),
+							assert: require.resolve('assert'),
+							os: require.resolve('os-browserify/browser'),
+							constants: require.resolve('constants-browserify'),
+							fs: path.resolve(__dirname, 'src', 'env', 'browser', 'fs'),
 							net: false,
-							tls: false
-
+							tls: false,
 					  }
 					: undefined,
 			extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],

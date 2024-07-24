@@ -1,7 +1,7 @@
 import * as path from 'path';
 import sinon from 'sinon';
 import * as temp from 'temp';
-import { ExtensionContext, SecretStorage, Uri } from 'vscode';
+import { ExtensionContext, SecretStorage, Uri, type LanguageModelAccessInformation } from 'vscode';
 
 import { InMemoryMemento } from './inMemoryMemento';
 
@@ -35,6 +35,7 @@ export class MockExtensionContext implements ExtensionContext {
 		this.globalStoragePath = temp.mkdirSync('global-storage-path');
 		this.logPath = temp.mkdirSync('log-path');
 	}
+	languageModelAccessInformation: LanguageModelAccessInformation;
 
 	asAbsolutePath(relativePath: string): string {
 		return path.resolve(this.extensionPath, relativePath);

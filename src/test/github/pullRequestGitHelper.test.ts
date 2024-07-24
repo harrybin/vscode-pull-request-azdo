@@ -75,10 +75,10 @@ describe('PullRequestGitHelper', function () {
 			repository.expectFetch('you', 'my-branch:pr/me/100', 1);
 			repository.expectPull(true);
 
-			const pullRequest = new PullRequestModel(telemetry, azdoRepository, remote, prItem);
+			const pullRequest: PullRequestModel = new PullRequestModel(telemetry, azdoRepository, remote, prItem);
 
-			if (pullRequest.isResolved() === false) {
-				assert(pullRequest.isResolved(), 'pull request head not resolved successfully');
+			if (!(pullRequest as PullRequestModel).isResolved()) {
+				assert((pullRequest as PullRequestModel).isResolved(), 'pull request head not resolved successfully');
 				return;
 			}
 

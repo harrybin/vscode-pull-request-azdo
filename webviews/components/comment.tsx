@@ -5,7 +5,7 @@
 
 import { Comment, PullRequestStatus } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import * as React from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import gfm from 'remark-gfm';
@@ -34,7 +34,7 @@ export type Props = Partial<Comment> & {
 
 export function CommentView(comment: Props) {
 	const { threadId, content, canEdit, isPRDescription, threadStatus, isFirstCommentInThread, changeThreadStatus } = comment;
-	const id = threadId * 1000 + comment.id;
+	const id = threadId * 1000 + (comment?.id ?? 0);
 	const [bodyMd, setBodyMd] = useStateProp(content);
 	const [bodyHTMLState, setBodyHtml] = useStateProp(content);
 	const { editComment, setDescription, pr } = useContext(PullRequestContext);
@@ -49,7 +49,7 @@ export function CommentView(comment: Props) {
 		return React.cloneElement(comment.headerInEditMode ? <CommentBox for={comment} /> : <></>, {}, [
 			<EditComment
 				id={id}
-				body={currentDraft || bodyMd}
+				body={currentDraft || bodyMd || ""}
 				onCancel={() => {
 					if (pr.pendingCommentDrafts) {
 						delete pr.pendingCommentDrafts[id];
@@ -93,8 +93,8 @@ export function CommentView(comment: Props) {
 				</div>
 			) : null}
 			<CommentBody
-				commentContent={comment.content}
-				commentId={comment.id}
+				commentContent={comment.content ?? ""}
+				commentId={comment.id ?? 0}
 				threadId={comment.threadId}
 				bodyHTML={bodyHTMLState}
 				body={bodyMd}
@@ -133,8 +133,8 @@ function CommentBox({ for: comment, onMouseEnter, onMouseLeave, children, thread
 			<div className="review-comment-container">
 				<div className="review-comment-header">
 					<Spaced>
-						<Avatar url={author.profileUrl} avatarUrl={author['_links']?.['avatar']?.['href']} />
-						<AuthorLink url={author.profileUrl} text={author.displayName} />
+						<Avatar url={author?.profileUrl ?? ""} avatarUrl={author ? author['_links']?.['avatar']?.['href'] : ""} />
+						<AuthorLink url={author?.profileUrl ?? ""} text={author?.displayName ?? ""} />
 						{publishedDate ? (
 							<>
 								commented{nbsp}
@@ -151,7 +151,7 @@ function CommentBox({ for: comment, onMouseEnter, onMouseLeave, children, thread
 							: null
 					} */}
 						{!!threadStatus ? (
-							<select onChange={e => changeThreadStatus(e.target.value)} defaultValue={threadStatus.toString()}>
+							<select onChange={e => changeThreadStatus && changeThreadStatus(e.target.value)} defaultValue={threadStatus.toString()}>
 								{ThreadStatusOrder.map(status => (
 									<option key={status} value={status}>
 										{ThreadStatus[status]}
@@ -194,7 +194,7 @@ function EditComment({ id, body, onCancel, onSave }: EditCommentProps) {
 	}, [draftComment]);
 
 	const submit = useCallback(async () => {
-		const { markdown, submitButton }: FormInputSet = form.current;
+		const { markdown, submitButton }: FormInputSet = form?.current ?? {};
 		submitButton.disabled = true;
 		try {
 			await onSave(markdown.value);
@@ -230,7 +230,7 @@ function EditComment({ id, body, onCancel, onSave }: EditCommentProps) {
 	);
 
 	return (
-		<form ref={form} onSubmit={onSubmit}>
+		<form ref={form as any} onSubmit={onSubmit}>
 			<textarea name="markdown" defaultValue={body} onKeyDown={onKeyDown} onInput={onInput} />
 			<div className="form-actions">
 				<button className="secondary" onClick={onCancel}>
@@ -250,19 +250,21 @@ export interface Embodied {
 	body?: string;
 }
 
-const renderers = {
-	code: ({ language, value }) => {
-		return (
-			<SyntaxHighlighter
-				style={dracula}
-				language={language}
-				showLineNumbers={true}
-				wrapLongLines={true}
-				children={value}
-			/>
-		);
-	},
-};
+import { ReactElement } from 'react';
+
+const renderers: Partial<Components> = {
+  code: ({ language, value }: { language: any; value: any }): ReactElement => {
+	return (
+	  <SyntaxHighlighter
+		style={dracula}
+		language={language}
+		showLineNumbers={true}
+		wrapLongLines={true}
+		children={value}
+	  />
+	);
+  },
+} as Partial<Components>;
 
 export const CommentBody = ({ commentContent, commentId, threadId, bodyHTML, body }: Embodied) => {
 	if (!body && !bodyHTML) {
@@ -275,8 +277,8 @@ export const CommentBody = ({ commentContent, commentId, threadId, bodyHTML, bod
 
 	const { applyPatch } = useContext(PullRequestContext);
 	// const renderedBody = <div dangerouslySetInnerHTML={{ __html: bodyHTML }} />;
-	const renderedBody = <ReactMarkdown renderers={renderers} plugins={[gfm]} children={body} />;
-	const containsSuggestion = (body || bodyHTML).indexOf('```diff') > -1;
+	const renderedBody = <ReactMarkdown components={renderers} children={body} />;
+	const containsSuggestion = (body || bodyHTML || "").indexOf('```diff') > -1;
 	const applyPatchButton = containsSuggestion ? (
 		<button onClick={() => applyPatch(commentContent, commentId, threadId)}>Apply Patch</button>
 	) : (
@@ -300,7 +302,7 @@ export function ReplyToThread({ onCancel, onSave }: ReplyToThreadProps) {
 	const form = useRef<HTMLFormElement>();
 
 	const submit = useCallback(async () => {
-		const { markdown, submitButton }: FormInputSet = form.current;
+		const { markdown, submitButton }: FormInputSet = form.current ?? {};
 		submitButton.disabled = true;
 		try {
 			await onSave(markdown.value);
@@ -328,7 +330,7 @@ export function ReplyToThread({ onCancel, onSave }: ReplyToThreadProps) {
 	);
 
 	return (
-		<form ref={form} onSubmit={onSubmit}>
+		<form ref={form as any} onSubmit={onSubmit}>
 			<textarea name="markdown" onKeyDown={onKeyDown} />
 			<div className="form-actions">
 				<button className="secondary" onClick={onCancel}>
@@ -348,15 +350,15 @@ export function AddComment({ pendingCommentText, state, hasWritePermission, isIs
 
 	emitter.addListener('quoteReply', message => {
 		updatePR({ pendingCommentText: `> ${message} \n\n` });
-		textareaRef.current.scrollIntoView();
-		textareaRef.current.focus();
+		textareaRef.current?.scrollIntoView();
+		textareaRef.current?.focus();
 	});
 
 	const submit = useCallback(
 		async (command: (body: string) => Promise<any> = comment) => {
 			try {
 				setBusy(true);
-				const { body }: FormInputSet = form.current;
+				const { body }: FormInputSet = form.current ?? {};
 				await command(body.value);
 				updatePR({ pendingCommentText: '' });
 			} finally {
@@ -393,11 +395,11 @@ export function AddComment({ pendingCommentText, state, hasWritePermission, isIs
 	);
 
 	return (
-		<form id="comment-form" ref={form} className="comment-form main-comment-form" onSubmit={onSubmit}>
+		<form id="comment-form" ref={form as any} className="comment-form main-comment-form" onSubmit={onSubmit}>
 			<textarea
 				id="comment-textarea"
 				name="body"
-				ref={textareaRef}
+				ref={textareaRef as any}
 				onInput={({ target }) => updatePR({ pendingCommentText: (target as any).value })}
 				onKeyDown={onKeyDown}
 				value={pendingCommentText}
@@ -438,7 +440,7 @@ export const AddCommentSimple = (pr: PullRequest) => {
 	const textareaRef = useRef<HTMLTextAreaElement>();
 
 	async function submitAction(selected: string): Promise<void> {
-		const { value } = textareaRef.current;
+		const { value } = textareaRef.current ?? { value: '' };
 		switch (selected) {
 			case ReviewType.RequestChanges:
 				await requestChanges(value);
@@ -464,7 +466,7 @@ export const AddCommentSimple = (pr: PullRequest) => {
 				id="comment-textarea"
 				name="body"
 				placeholder="Leave a comment"
-				ref={textareaRef}
+				ref={textareaRef as any}
 				value={pr.pendingCommentText}
 				onChange={onChangeTextarea}
 			/>
